@@ -105,6 +105,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(str(auth_post.author), expected.username)
 
     def test_post_detail_shows_correct_content(self):
+        """Шаблон profile сформирован с правильным контекстом"""
         response = self.guest_client.get(reverse(
             'posts:post_detail', kwargs={'post_id': self.post.id}))
         test_post = response.context['post']
@@ -194,6 +195,7 @@ class PaginatorViewsTest(TestCase):
         self.authorized_client.force_login(PaginatorViewsTest.user)
 
     def test_main_page_contains_ten_records(self):
+        """Проверяем, что на страницах выводится по 10 постов"""
         urls = [
             reverse('posts:index'),
             reverse('posts:group_list', kwargs={'slug': self.group.slug}),

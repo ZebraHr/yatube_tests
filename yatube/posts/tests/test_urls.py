@@ -55,7 +55,7 @@ class PostURLTests(TestCase):
                 self.assertEqual(response.status_code, value)
 
     def test_urls_only_for_authorised(self):
-        '''Страница /create/ доступна только авторизованному пользователю'''
+        """Страница /create/ доступна только авторизованному пользователю"""
         url = '/create/'
         users = {
             self.guest_client: HTTPStatus.FOUND,
@@ -71,14 +71,20 @@ class PostURLTests(TestCase):
         response = self.guest_client.get('/create/')
         self.assertRedirects(response, '/auth/login/?next=/create/')
 
-    def test_not_author_is_redirected(self):
-        """Не автор поста перенаправен со страницы /edit/"""
-        response = self.authorized_client.get(reverse('posts:post_edit',
-                                                      kwargs={'post_id':
-                                                              self.post.id}))
+    def test_auth_user_is_redirected_from_edit(self):
+        """Авторизованный пользователь перенаправлен со страницы /edit/"""
+        response = self.authorized_client.get(
+            reverse('posts:post_edit', kwargs={'post_id': self.post.id}))
         self.assertRedirects(response, reverse('posts:post_detail',
                                                kwargs={'post_id':
                                                        self.post.id}))
+
+    def test_guest_user_is_redirected_from_edit(self):
+        """Анонимный пользователь перенаправлен со страницы /edit/"""
+        response = self.guest_client.get(
+            reverse('posts:post_edit', kwargs={'post_id': self.post.id}))
+        self.assertRedirects(response,
+                             f'/auth/login/?next=/posts/{self.post.id}/edit/')
 
     def test_unexisting_page(self):
         """Несуществующая страница не найдена"""
